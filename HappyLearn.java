@@ -128,7 +128,7 @@ public class HappyLearn extends JFrame {
     private JPanel mainContainer = new JPanel(cardLayout);
 
     public HappyLearn() {
-        setTitle("Kids Fun Learning System");
+        setTitle("Happy Learn for Kids");
         setSize(500, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
