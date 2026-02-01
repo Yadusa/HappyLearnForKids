@@ -1,9 +1,36 @@
 //Yadusa Balakrishnan 1221205086
 //Keishav Rao Bala Subramaniam  1221207387
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.*;
+import java.util.Scanner;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.ImageIcon;
+import javax.swing.BorderFactory;
+
+// AWT classes
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Image;
+
+// IO classes
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 //Inheritance: Superclass
 class ModulePanel extends JPanel {
@@ -38,36 +65,219 @@ class WelcomePanel extends JPanel {
     }
 }
 
+class UserDetailsPanel extends ModulePanel {
+    private JTextField nameField, ageField, schoolField, gradeField;
+
+    public UserDetailsPanel(Runnable onProceed) {
+        super("Tell us about yourself!");
+        
+        // Grid layout with 5 rows (Name, Age, School, Grade, Button)
+        JPanel form = new JPanel(new GridLayout(5, 2, 10, 10));
+        form.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+
+        nameField = new JTextField();
+        ageField = new JTextField();
+        schoolField = new JTextField();
+        gradeField = new JTextField();
+
+        form.add(new JLabel("Full Name:"));
+        form.add(nameField);
+        form.add(new JLabel("Age:"));
+        form.add(ageField);
+        form.add(new JLabel("School Name:"));
+        form.add(schoolField);
+        form.add(new JLabel("Grade/Standard:"));
+        form.add(gradeField);
+
+        JButton submitBtn = new JButton("Save & Proceed");
+        submitBtn.addActionListener(e -> {
+            if (saveDetails()) {
+                // Personalized greeting
+                String name = nameField.getText().trim();
+                JOptionPane.showMessageDialog(this, "Let's get started, " + name + "!");
+                onProceed.run();
+            }
+        });
+
+        add(form, BorderLayout.CENTER);
+        add(submitBtn, BorderLayout.SOUTH);
+    }
+
+    private boolean saveDetails() {
+        String name = nameField.getText().trim();
+        String age = ageField.getText().trim();
+        String school = schoolField.getText().trim();
+        String grade = gradeField.getText().trim();
+
+        if (name.isEmpty() || age.isEmpty() || school.isEmpty() || grade.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all details!");
+            return false;
+        }
+
+        // Saving to your userDetails.txt file
+        try (java.io.FileWriter fw = new java.io.FileWriter("userDetails.txt", true);
+             java.io.PrintWriter out = new java.io.PrintWriter(fw)) {
+            out.println("Name: " + name + " | Age: " + age + " | School: " + school + " | Grade: " + grade);
+            return true;
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error saving details.");
+            return false;
+        }
+    }
+}
+
 //MODULE MENU PANEL 
 class ModuleMenuPanel extends ModulePanel {
-    public ModuleMenuPanel(Runnable openAlpha, Runnable openNumbers, Runnable openMaths) {
-        super("Choose a Module");
+    public ModuleMenuPanel(Runnable openAlpha, Runnable openMedium, Runnable openAdvanced) {
+        super("Choose Your Learning Level");
 
-        JPanel grid = new JPanel(new GridLayout(2, 2, 15, 15));
-        grid.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        JPanel grid = new JPanel(new GridLayout(3, 1, 15, 15));
+        grid.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
-        JButton alphaBtn = new JButton("Alphabets");
-        JButton numBtn = new JButton("Numbers 1-10");
-        JButton mathBtn = new JButton("Multiplication");
-        JButton exitBtn = new JButton("Exit");
+        JButton begBtn = new JButton("Beginner (Alphabets, Numbers & Colours)");
+        JButton medBtn = new JButton("Medium (Arithmetic Operations)");
+        JButton advBtn = new JButton("Advanced (Coming Soon!)");
+        
+        JButton exitBtn = new JButton("Exit App");
+        exitBtn.setBackground(Color.LIGHT_GRAY);
+        exitBtn.addActionListener(e -> {
+          JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!");
+          System.exit(0);
+        });
+
+        Font f = new Font("Arial", Font.BOLD, 18);
+        
+        // Setting button colors
+        begBtn.setBackground(Color.GREEN);
+        begBtn.setForeground(Color.WHITE); // White text for better contrast on Red
+        
+        medBtn.setBackground(Color.YELLOW);
+        medBtn.setForeground(Color.BLACK); // Black text for Yellow
+        
+        advBtn.setBackground(Color.RED);
+        advBtn.setForeground(Color.WHITE);
+
+        // Required for color to show on some operating systems
+        begBtn.setOpaque(true);
+        begBtn.setBorderPainted(false);
+        medBtn.setOpaque(true);
+        medBtn.setBorderPainted(false);
+        advBtn.setOpaque(true);
+        advBtn.setBorderPainted(false);
+
+        begBtn.setFont(f);
+        medBtn.setFont(f);
+        advBtn.setFont(f);
+
+        begBtn.addActionListener(e -> openAlpha.run());
+        medBtn.addActionListener(e -> openMedium.run());
+        advBtn.addActionListener(e -> openAdvanced.run());
+
+        grid.add(begBtn);
+        grid.add(medBtn);
+        grid.add(advBtn);
+
+        add(grid, BorderLayout.CENTER);
+    }
+}
+
+class BeginnerMenuPanel extends ModulePanel {
+    public BeginnerMenuPanel(Runnable openAlpha, Runnable openNumbers, Runnable openColors, Runnable goBack) {
+        super("Beginner Modules");
+
+        JPanel grid = new JPanel(new GridLayout(3, 1, 15, 15));
+        grid.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+
+        JButton alphaBtn = new JButton("Learn Alphabets");
+        JButton numBtn = new JButton("Learn Numbers");
+        JButton colorBtn = new JButton("Learn Colors");
+        JButton backBtn = new JButton("Back to Levels");
 
         Font f = new Font("Arial", Font.BOLD, 18);
         alphaBtn.setFont(f);
         numBtn.setFont(f);
-        mathBtn.setFont(f);
-        exitBtn.setFont(f);
+        colorBtn.setFont(f);
 
         alphaBtn.addActionListener(e -> openAlpha.run());
         numBtn.addActionListener(e -> openNumbers.run());
-        mathBtn.addActionListener(e -> openMaths.run());
-        exitBtn.addActionListener(e -> System.exit(0));
+        colorBtn.addActionListener(e -> openColors.run());
+        backBtn.addActionListener(e -> goBack.run());
 
         grid.add(alphaBtn);
         grid.add(numBtn);
-        grid.add(mathBtn);
-        grid.add(exitBtn);
+        grid.add(colorBtn);
 
         add(grid, BorderLayout.CENTER);
+        add(backBtn, BorderLayout.SOUTH);
+    }
+}
+
+class MediumMathModule extends ModulePanel {
+    private JTextField numField1, numField2;
+    private JLabel resultLabel;
+
+    public MediumMathModule(Runnable goMenu) {
+        super("Medium Level: Math Fun!");
+
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
+
+        numField1 = new JTextField();
+        numField2 = new JTextField();
+        resultLabel = new JLabel("Enter numbers and pick an operation!", SwingConstants.CENTER);
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        inputPanel.add(new JLabel("First Number:"));
+        inputPanel.add(numField1);
+        inputPanel.add(new JLabel("Second Number:"));
+        inputPanel.add(numField2);
+
+        JPanel opPanel = new JPanel(new FlowLayout());
+        JButton addBtn = new JButton("+");
+        JButton subBtn = new JButton("-");
+        JButton mulBtn = new JButton("x");
+        JButton divBtn = new JButton("÷");
+
+        addBtn.addActionListener(e -> calculate('+'));
+        subBtn.addActionListener(e -> calculate('-'));
+        mulBtn.addActionListener(e -> calculate('*'));
+        divBtn.addActionListener(e -> calculate('/'));
+
+        opPanel.add(addBtn); opPanel.add(subBtn);
+        opPanel.add(mulBtn); opPanel.add(divBtn);
+
+        JButton backBtn = new JButton("Back to Levels");
+        backBtn.addActionListener(e -> goMenu.run());
+
+        JPanel container = new JPanel(new BorderLayout());
+        container.add(inputPanel, BorderLayout.NORTH);
+        container.add(opPanel, BorderLayout.CENTER);
+
+        add(container, BorderLayout.CENTER);
+        add(resultLabel, BorderLayout.SOUTH);
+        add(backBtn, BorderLayout.PAGE_END);
+    }
+
+    private void calculate(char op) {
+        try {
+            double n1 = Double.parseDouble(numField1.getText());
+            double n2 = Double.parseDouble(numField2.getText());
+            double res = 0;
+            String sym = "";
+
+            if (op == '+') { res = n1 + n2; sym = " + "; }
+            else if (op == '-') { res = n1 - n2; sym = " - "; }
+            else if (op == '*') { res = n1 * n2; sym = " x "; }
+            else if (op == '/') { 
+                if (n2 == 0) { JOptionPane.showMessageDialog(this, "Cannot divide by 0!"); return; }
+                res = n1 / n2; sym = " ÷ "; 
+            }
+
+            resultLabel.setText("Result: " + n1 + sym + n2 + " = " + String.format("%.2f", res));
+            resultLabel.setForeground(new Color(0, 128, 0));
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Please enter valid numbers!");
+        }
     }
 }
 
@@ -105,10 +315,22 @@ class AlphabetModule extends ModulePanel {
         nextBtn = new JButton("Next");
         backBtn.setFont(new Font("Arial", Font.BOLD, 16));
         nextBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        JButton exitBtn = new JButton("Exit");
+        exitBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        exitBtn.addActionListener(e -> {
+          // We can use a callback or reach the main frame
+          int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
+          if (confirm == JOptionPane.YES_OPTION) {
+             JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!");
+             System.exit(0);
+           }
+        });
 
         nav.setBorder(BorderFactory.createEmptyBorder(10, 30, 20, 30));
         nav.add(backBtn, BorderLayout.WEST);
-        nav.add(nextBtn, BorderLayout.EAST);
+        nav.add(nextBtn, BorderLayout.CENTER);
+        nav.add(exitBtn, BorderLayout.EAST);
 
         backBtn.addActionListener(e -> onBack());
         nextBtn.addActionListener(e -> onNext());
@@ -146,54 +368,49 @@ class AlphabetModule extends ModulePanel {
     }
 
     private void showPopup(String letter) {
-        JLabel content = buildPopupLabel(letter);
-        JOptionPane.showMessageDialog(this, content, "Alphabet", JOptionPane.PLAIN_MESSAGE);
+    String imagePath = "";
+    String description = "";
+
+    try {
+        // Points to the 'txt' folder shown in your screenshot
+        File myFile = new File("txt/alphabet.txt");
+        Scanner reader = new Scanner(myFile);
+        
+        while (reader.hasNextLine()) {
+            String line = reader.nextLine();
+            // Assuming your format is: A,image/apple.jpg,A is for Apple!
+            String[] parts = line.split(",");
+            
+            if (parts[0].equalsIgnoreCase(letter)) {
+                imagePath = parts[1]; // e.g. "image/apple.jpg"
+                description = parts[2]; // e.g. "A is for Apple!"
+                break;
+            }
+        }
+        reader.close();
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: Could not read txt/alphabets.txt");
+        return; 
     }
 
-    private JLabel buildPopupLabel(String letter) {
+    // Create the label with text
+    JLabel lbl = new JLabel(description, SwingConstants.CENTER);
+    lbl.setFont(new Font("Arial", Font.BOLD, 18));
+    lbl.setHorizontalTextPosition(SwingConstants.CENTER);
+    lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
 
-        String path = "";
-        String text = "";
-
-        if (letter.equals("A")) { path="assets/apple.jpg"; text="A is for Apple!"; }
-        else if (letter.equals("B")) { path="assets/ball.jpg"; text="B is for Ball!"; }
-        else if (letter.equals("C")) { path="assets/cat.jpg"; text="C is for Cat!"; }
-        else if (letter.equals("D")) { path="assets/dog.jpg"; text="D is for Dog!"; }
-        else if (letter.equals("E")) { path="assets/elephant.jpg"; text="E is for Elephant!"; }
-        else if (letter.equals("F")) { path="assets/fish.jpg"; text="F is for Fish!"; }
-        else if (letter.equals("G")) { path="assets/goat.jpg"; text="G is for Goat!"; }
-        else if (letter.equals("H")) { path="assets/hat.jpg"; text="H is for Hat!"; }
-        else if (letter.equals("I")) { path="assets/icecream.jpg"; text="I is for Ice Cream!"; }
-        else if (letter.equals("J")) { path="assets/jug.jpg"; text="J is for Jug!"; }
-        else if (letter.equals("K")) { path="assets/kite.jpg"; text="K is for Kite!"; }
-        else if (letter.equals("L")) { path="assets/lion.jpg"; text="L is for Lion!"; }
-        else if (letter.equals("M")) { path="assets/monkey.jpg"; text="M is for Monkey!"; }
-        else if (letter.equals("N")) { path="assets/nest.jpg"; text="N is for Nest!"; }
-        else if (letter.equals("O")) { path="assets/orange.jpg"; text="O is for Orange!"; }
-        else if (letter.equals("P")) { path="assets/parrot.jpg"; text="P is for Parrot!"; }
-        else if (letter.equals("Q")) { path="assets/queen.jpg"; text="Q is for Queen!"; }
-        else if (letter.equals("R")) { path="assets/rabbit.jpg"; text="R is for Rabbit!"; }
-        else if (letter.equals("S")) { path="assets/sun.jpg"; text="S is for Sun!"; }
-        else if (letter.equals("T")) { path="assets/tiger.jpg"; text="T is for Tiger!"; }
-        else if (letter.equals("U")) { path="assets/umbrella.jpg"; text="U is for Umbrella!"; }
-        else if (letter.equals("V")) { path="assets/van.jpg"; text="V is for Van!"; }
-        else if (letter.equals("W")) { path="assets/watch.jpg"; text="W is for Watch!"; }
-        else if (letter.equals("X")) { path="assets/xylophone.jpg"; text="X is for Xylophone!"; }
-        else if (letter.equals("Y")) { path="assets/yoyo.jpg"; text="Y is for Yo-Yo!"; }
-        else if (letter.equals("Z")) { path="assets/zebra.jpg"; text="Z is for Zebra!"; }
-        else { text = "Select a letter"; }
-
-        JLabel lbl = new JLabel(text, SwingConstants.CENTER);
-        lbl.setFont(new Font("Arial", Font.BOLD, 18));
-        lbl.setHorizontalTextPosition(SwingConstants.CENTER);
-        lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
-
-        ImageIcon icon = new ImageIcon(path);
-        Image img = icon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH);
+    // Retrieve the image from the 'image' folder shown in your screenshot
+    File imgFile = new File(imagePath);
+    if (imgFile.exists()) {
+        ImageIcon icon = new ImageIcon(imagePath);
+        Image img = icon.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
         lbl.setIcon(new ImageIcon(img));
-
-        return lbl;
+    } else {
+        lbl.setText(description + " (Image not found in image folder)");
     }
+
+    JOptionPane.showMessageDialog(this, lbl, "Alphabet Learning", JOptionPane.PLAIN_MESSAGE);
+   }
 
     private void onBack() {
         if (pageIndex == 0) {
@@ -235,6 +452,7 @@ class NumbersModule extends ModulePanel {
             JButton btn = new JButton(num);
             btn.setFont(f);
             btn.setPreferredSize(new Dimension(80, 80));
+            // When clicked, search the text file
             btn.addActionListener(e -> showPopup(num));
             grid.add(btn);
         }
@@ -244,9 +462,22 @@ class NumbersModule extends ModulePanel {
         JButton nextBtn = new JButton("Next");
         backBtn.setFont(new Font("Arial", Font.BOLD, 16));
         nextBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        JButton exitBtn = new JButton("Exit");
+        exitBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        exitBtn.addActionListener(e -> {
+          // We can use a callback or reach the main frame
+          int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
+          if (confirm == JOptionPane.YES_OPTION) {
+            JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!");
+            System.exit(0);
+        }
+      });
+        
         nav.setBorder(BorderFactory.createEmptyBorder(10, 30, 20, 30));
         nav.add(backBtn, BorderLayout.WEST);
-        nav.add(nextBtn, BorderLayout.EAST);
+        nav.add(nextBtn, BorderLayout.CENTER);
+        nav.add(exitBtn, BorderLayout.EAST);
 
         backBtn.addActionListener(e -> goAlpha.run());
         nextBtn.addActionListener(e -> goMath.run());
@@ -256,27 +487,142 @@ class NumbersModule extends ModulePanel {
     }
 
     private void showPopup(String num) {
+        String imagePath = "";
+        String description = "";
 
-    String path = "assets/" + num + ".jpg";
-    File f = new File(path);
-    if (!f.exists()) {
-    JOptionPane.showMessageDialog(this, "Image not found: " + path);
-    return;
+        // 1. Read the numbers.txt file
+        try {
+            File myFile = new File("txt/numbers.txt");
+            Scanner reader = new Scanner(myFile);
+            
+            while (reader.hasNextLine()) {
+                String line = reader.nextLine();
+                String[] parts = line.split(",");
+                
+                // If the first part matches the number (e.g., "1")
+                if (parts[0].equals(num)) {
+                    imagePath = parts[1]; // Gets "image/1.jpg"
+                    description = parts[2]; // Gets "Number One!"
+                    break;
+                }
+            }
+            reader.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: Could not read txt/numbers.txt");
+            return;
+        }
+
+        // 2. Build the Popup UI
+        JLabel lbl = new JLabel(description, SwingConstants.CENTER);
+        lbl.setFont(new Font("Arial", Font.BOLD, 18));
+        lbl.setHorizontalTextPosition(SwingConstants.CENTER);
+        lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+
+        // Load the image from the folder
+        File imgFile = new File(imagePath);
+        if (imgFile.exists()) {
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image img = icon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH);
+            lbl.setIcon(new ImageIcon(img));
+        } else {
+            lbl.setText(description + " (Image not found at: " + imagePath + ")");
+        }
+
+        JOptionPane.showMessageDialog(this, lbl, "Number Learning", JOptionPane.PLAIN_MESSAGE);
     }
-    
-    String text = "Number " + num + "!";
-    JLabel lbl = new JLabel(text, SwingConstants.CENTER);
-    lbl.setFont(new Font("Arial", Font.BOLD, 18));
-    lbl.setHorizontalTextPosition(SwingConstants.CENTER);
-    lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
-
-    ImageIcon icon = new ImageIcon(path);
-    Image img = icon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH);
-    lbl.setIcon(new ImageIcon(img));
-
-    JOptionPane.showMessageDialog(this, lbl, "Numbers", JOptionPane.PLAIN_MESSAGE);
 }
 
+class ColorModule extends ModulePanel {
+    private final String[] colors = {"Red", "Blue", "Green", "Yellow", "Orange", "Pink", "Brown", "Purple"};
+    private Runnable goBack;
+    private Runnable goNext; // Added to make the Next button work
+
+    public ColorModule(Runnable goBack, Runnable goNext) {
+        super("Learn Your Colors!");
+        this.goBack = goBack;
+        this.goNext = goNext;
+
+        // 1. Setup the Color Grid (Center)
+        JPanel grid = new JPanel(new GridLayout(2, 4, 15, 15)); // Changed to 2x4 to fit 8 colors
+        grid.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+        for (String c : colors) {
+            JButton btn = new JButton(c);
+            btn.setFont(new Font("Arial", Font.BOLD, 18));
+            btn.addActionListener(e -> showPopup(c));
+            grid.add(btn);
+        }
+
+        // 2. Setup the Navigation Panel (Bottom)
+        JPanel nav = new JPanel(new GridLayout(1, 3, 20, 0)); // 1 row, 3 columns for equal spacing
+        nav.setBorder(BorderFactory.createEmptyBorder(10, 50, 20, 50));
+
+        JButton backBtn = new JButton("Back");
+        JButton nextBtn = new JButton("Next");
+        JButton exitBtn = new JButton("Exit");
+
+        // Style fonts
+        Font btnFont = new Font("Arial", Font.BOLD, 16);
+        backBtn.setFont(btnFont);
+        nextBtn.setFont(btnFont);
+        exitBtn.setFont(btnFont);
+
+        // Button Actions
+        backBtn.addActionListener(e -> goBack.run());
+        nextBtn.addActionListener(e -> goNext.run());
+        exitBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!");
+                System.exit(0);
+            }
+        });
+
+        // Add buttons to nav panel
+        nav.add(backBtn);
+        nav.add(nextBtn);
+        nav.add(exitBtn);
+
+        // 3. Add panels to the Main ModulePanel
+        add(grid, BorderLayout.CENTER);
+        add(nav, BorderLayout.SOUTH);
+    }
+
+    private void showPopup(String colorName) {
+        String imagePath = "";
+        String description = "";
+
+        try {
+            File myFile = new File("txt/colors.txt");
+            Scanner reader = new Scanner(myFile);
+            while (reader.hasNextLine()) {
+                String line = reader.nextLine();
+                String[] parts = line.split(",");
+                if (parts[0].equalsIgnoreCase(colorName)) {
+                    imagePath = parts[1];
+                    description = parts[2];
+                    break;
+                }
+            }
+            reader.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error reading txt/colors.txt");
+            return;
+        }
+
+        JLabel lbl = new JLabel(description, SwingConstants.CENTER);
+        lbl.setFont(new Font("Arial", Font.BOLD, 18));
+        lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+        lbl.setHorizontalTextPosition(SwingConstants.CENTER);
+        
+        File imgFile = new File(imagePath);
+        if (imgFile.exists()) {
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image img = icon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            lbl.setIcon(new ImageIcon(img));
+        }
+        JOptionPane.showMessageDialog(this, lbl, "Color Fun", JOptionPane.PLAIN_MESSAGE);
+    }
 }
 
 //MATH MODULE
@@ -352,11 +698,11 @@ class MathModule extends ModulePanel {
 }
 
 // MAIN FRAME (HappyLearn)
-public class HappyLearn extends JFrame {
+public class HappyLearnForKids extends JFrame {
     private CardLayout cardLayout = new CardLayout();
     private JPanel mainContainer = new JPanel(cardLayout);
 
-    public HappyLearn() {
+    public HappyLearnForKids() {
         setTitle("Kids Fun Learning System");
         setSize(500, 520);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -380,6 +726,10 @@ public class HappyLearn extends JFrame {
 
         // Navigation Runnables (so panels can switch screens)
         Runnable showWelcome = () -> cardLayout.show(mainContainer, "Welcome");
+        Runnable showDetails = () -> cardLayout.show(mainContainer, "Details");
+        Runnable showBeginnerMenu = () -> cardLayout.show(mainContainer, "BeginnerMenu");
+        Runnable showColors = () -> cardLayout.show(mainContainer, "Colors");
+        Runnable showMediumMenu = () -> cardLayout.show(mainContainer, "MediumMenu");
         Runnable showMenu = () -> cardLayout.show(mainContainer, "Menu");
         Runnable showAlpha = () -> cardLayout.show(mainContainer, "Alpha");
         Runnable showNumbers = () -> cardLayout.show(mainContainer, "Numbers");
@@ -393,10 +743,13 @@ public class HappyLearn extends JFrame {
         mathItem.addActionListener(e -> showMath.run());
 
         // Screens
-        mainContainer.add(new WelcomePanel(showMenu), "Welcome");
-        mainContainer.add(new ModuleMenuPanel(showAlpha, showNumbers, showMath), "Menu");
-        mainContainer.add(new AlphabetModule(showMenu, showNumbers), "Alpha");
-        mainContainer.add(new NumbersModule(showAlpha, showMath), "Numbers");
+        mainContainer.add(new WelcomePanel(showDetails), "Welcome");
+        mainContainer.add(new UserDetailsPanel(showMenu), "Details");
+        mainContainer.add(new ModuleMenuPanel(showBeginnerMenu, showMediumMenu, showWelcome), "Menu"); // The missing link
+        mainContainer.add(new BeginnerMenuPanel(showAlpha, showNumbers, showColors, showMenu), "BeginnerMenu");
+        mainContainer.add(new AlphabetModule(showBeginnerMenu, showNumbers), "Alpha");
+        mainContainer.add(new NumbersModule(showAlpha, showColors), "Numbers");
+        mainContainer.add(new ColorModule(showBeginnerMenu, showMath), "Colors");
         mainContainer.add(new MathModule(showNumbers, showMenu), "Maths");
 
         add(mainContainer);
@@ -416,6 +769,12 @@ public class HappyLearn extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new HappyLearn().setVisible(true));
+        SwingUtilities.invokeLater(() -> new HappyLearnForKids().setVisible(true));
     }
+    
+    private void exitProgram() {
+    JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!", 
+                                  "Goodbye", JOptionPane.INFORMATION_MESSAGE);
+    System.exit(0);
+}
 }
