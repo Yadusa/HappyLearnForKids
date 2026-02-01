@@ -38,50 +38,81 @@ class ModulePanel extends JPanel {
 }
 
 class WelcomePanel extends JPanel {
+    
+    private final String fontName = "Lucida Handwriting";
+    private final Color backgroundColor = Color.white;
+    private final Color titleColor = Color.orange;
+
     public WelcomePanel(Runnable onStart) {
+        
+        setBackground(backgroundColor);
         setLayout(new BorderLayout());
 
+       
         JLabel title = new JLabel("Welcome to Happy Learn!", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setFont(new Font(fontName, Font.BOLD, 25));
+        title.setForeground(titleColor); 
+        title.setBorder(BorderFactory.createEmptyBorder(50, 10, 50, 10));
 
+        
         JButton startBtn = new JButton("START");
-        startBtn.setFont(new Font("Arial", Font.BOLD, 22));
-        startBtn.setPreferredSize(new Dimension(200, 60));
+        startBtn.setFont(new Font("Arial", Font.BOLD, 15));
+        startBtn.setBackground(Color.white);
+        startBtn.setForeground(Color.blue); 
+        startBtn.setPreferredSize(new Dimension(100, 50));
+        
+        startBtn.setFocusPainted(false);
 
         startBtn.addActionListener(e -> onStart.run());
 
-        JPanel center = new JPanel(new FlowLayout());
-        center.add(startBtn);
+        JPanel buttonContainer = new JPanel(new FlowLayout());
+        buttonContainer.setBackground(backgroundColor); // Keep color consistent
+        buttonContainer.add(startBtn);
 
         add(title, BorderLayout.CENTER);
-        add(center, BorderLayout.SOUTH);
+        add(buttonContainer, BorderLayout.SOUTH);
     }
 }
 
 class UserDetailsPanel extends ModulePanel {
     private JTextField nameField, ageField, schoolField, gradeField;
+    
+    private String fontName = "Arial"; 
+    private Font labelFont = new Font(fontName, Font.BOLD, 16);
+    private Color themeColor = new Color(255,255,191);
 
     public UserDetailsPanel(Runnable onProceed) {
         super("Tell us about yourself!");
+        this.setBackground(themeColor);
 
-        JPanel form = new JPanel(new GridLayout(5, 2, 10, 10));
+        
+        JPanel form = new JPanel(new GridLayout(5, 2, 10, 20));
+        form.setBackground(themeColor);
         form.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
-        nameField = new JTextField();
-        ageField = new JTextField();
-        schoolField = new JTextField();
-        gradeField = new JTextField();
-
-        form.add(new JLabel("Full Name:"));
+        
+        form.add(createStyledLabel("Full Name:"));
+        nameField = createStyledField();
         form.add(nameField);
-        form.add(new JLabel("Age:"));
+
+        form.add(createStyledLabel("Age:"));
+        ageField = createStyledField();
         form.add(ageField);
-        form.add(new JLabel("School Name:"));
+
+        form.add(createStyledLabel("School Name:"));
+        schoolField = createStyledField();
         form.add(schoolField);
-        form.add(new JLabel("Grade/Standard:"));
+
+        form.add(createStyledLabel("Grade/Standard:"));
+        gradeField = createStyledField();
         form.add(gradeField);
 
+       
         JButton submitBtn = new JButton("Save & Proceed");
+        submitBtn.setFont(new Font(fontName, Font.BOLD, 18));
+        submitBtn.setBackground(new Color(239,178,97)); 
+        submitBtn.setForeground(Color.WHITE);
+        
         submitBtn.addActionListener(e -> {
             if (saveDetails()) {
                 String name = nameField.getText().trim();
@@ -92,6 +123,21 @@ class UserDetailsPanel extends ModulePanel {
 
         add(form, BorderLayout.CENTER);
         add(submitBtn, BorderLayout.SOUTH);
+    }
+
+    private JLabel createStyledLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(labelFont);
+        label.setForeground(new Color(25, 25, 112)); 
+        return label;
+    }
+
+    // Helper method to style text fields
+    private JTextField createStyledField() {
+        JTextField field = new JTextField();
+        field.setFont(new Font(fontName, Font.PLAIN, 16));
+        field.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        return field;
     }
 
     private boolean saveDetails() {
@@ -117,45 +163,30 @@ class UserDetailsPanel extends ModulePanel {
 }
 
 class ModuleMenuPanel extends ModulePanel {
+    // Styling inspired by Lab 9 constants
+    private final String fontName = "Lucida Handwriting"; //
+    private final Color bgColor = new Color(255,255,191); //
+
     public ModuleMenuPanel(Runnable openAlpha, Runnable openMedium, Runnable openAdvanced) {
         super("Choose Your Learning Level");
+        this.setBackground(bgColor); // Set the main panel background
 
-        JPanel grid = new JPanel(new GridLayout(3, 1, 15, 15));
+        // Create the grid for buttons
+        JPanel grid = new JPanel(new GridLayout(3, 1, 20, 20));
+        grid.setBackground(bgColor); //
         grid.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
-        JButton begBtn = new JButton("Beginner (Alphabets, Numbers & Colours)");
-        JButton medBtn = new JButton("Medium (Arithmetic Operations)");
-        JButton advBtn = new JButton("Advanced (Maths Quiz)");
+        // Create buttons
+        JButton begBtn = new JButton("Beginner");
+        JButton medBtn = new JButton("Medium");
+        JButton advBtn = new JButton("Advanced");
 
-        JButton exitBtn = new JButton("Exit App");
-        exitBtn.setBackground(Color.LIGHT_GRAY);
-        exitBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!");
-            System.exit(0);
-        });
+        // Styling buttons using Lab 9 logic
+        styleButton(begBtn, Color.green, Color.white); // Magenta text, Cyan back
+        styleButton(medBtn, Color.yellow, Color.white);   // Blue text
+        styleButton(advBtn, Color.red, Color.white);   // Red text like "GONG XI FA CAI"
 
-        Font f = new Font("Arial", Font.BOLD, 18);
-
-        begBtn.setBackground(Color.GREEN);
-        begBtn.setForeground(Color.WHITE);
-
-        medBtn.setBackground(Color.YELLOW);
-        medBtn.setForeground(Color.BLACK);
-
-        advBtn.setBackground(Color.RED);
-        advBtn.setForeground(Color.WHITE);
-
-        begBtn.setOpaque(true);
-        begBtn.setBorderPainted(false);
-        medBtn.setOpaque(true);
-        medBtn.setBorderPainted(false);
-        advBtn.setOpaque(true);
-        advBtn.setBorderPainted(false);
-
-        begBtn.setFont(f);
-        medBtn.setFont(f);
-        advBtn.setFont(f);
-
+        // Functionality
         begBtn.addActionListener(e -> openAlpha.run());
         medBtn.addActionListener(e -> openMedium.run());
         advBtn.addActionListener(e -> openAdvanced.run());
@@ -165,14 +196,37 @@ class ModuleMenuPanel extends ModulePanel {
         grid.add(advBtn);
 
         add(grid, BorderLayout.CENTER);
+
+        // Exit button at the bottom
+        JButton exitBtn = new JButton("Exit App");
+        exitBtn.setFont(new Font("Arial", Font.BOLD, 14));
+        exitBtn.setForeground(Color.RED); 
+        exitBtn.setBackground(Color.WHITE);
+        exitBtn.addActionListener(e -> System.exit(0));
+        add(exitBtn, BorderLayout.SOUTH);
+    }
+
+    private void styleButton(JButton btn, Color fore, Color back) {
+        btn.setFont(new Font(fontName, Font.BOLD, 18)); 
+        btn.setForeground(fore); 
+        btn.setBackground(back); 
+        btn.setOpaque(true);
+        btn.setBorder(BorderFactory.createLineBorder(fore, 2));
     }
 }
 
 class BeginnerMenuPanel extends ModulePanel {
+   
+    private final String fontName = "Lucida Handwriting"; //
+    private final Color bgColor = new Color(255,255,191); //
+
     public BeginnerMenuPanel(Runnable openAlpha, Runnable openNumbers, Runnable openColors, Runnable goBack) {
         super("Beginner Modules");
+        this.setBackground(bgColor); 
 
-        JPanel grid = new JPanel(new GridLayout(3, 1, 15, 15));
+        
+        JPanel grid = new JPanel(new GridLayout(3, 1, 20, 20));
+        grid.setBackground(bgColor); 
         grid.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
         JButton alphaBtn = new JButton("Learn Alphabets");
@@ -180,11 +234,18 @@ class BeginnerMenuPanel extends ModulePanel {
         JButton colorBtn = new JButton("Learn Colors");
         JButton backBtn = new JButton("Back to Levels");
 
-        Font f = new Font("Arial", Font.BOLD, 18);
-        alphaBtn.setFont(f);
-        numBtn.setFont(f);
-        colorBtn.setFont(f);
+        // Applying styles: Foreground/Background logic from Lab 9
+        styleBeginnerButton(alphaBtn, Color.magenta, Color.white); 
+        styleBeginnerButton(numBtn, Color.blue, Color.white); 
+        styleBeginnerButton(colorBtn, new Color(0, 128, 0), Color.white); 
 
+
+        backBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        backBtn.setForeground(Color.RED); // 
+        backBtn.setBackground(Color.white);
+        backBtn.setFocusPainted(false);
+
+    
         alphaBtn.addActionListener(e -> openAlpha.run());
         numBtn.addActionListener(e -> openNumbers.run());
         colorBtn.addActionListener(e -> openColors.run());
@@ -195,7 +256,20 @@ class BeginnerMenuPanel extends ModulePanel {
         grid.add(colorBtn);
 
         add(grid, BorderLayout.CENTER);
-        add(backBtn, BorderLayout.SOUTH);
+        
+      
+        JPanel navPanel = new JPanel(new FlowLayout());
+        navPanel.setBackground(bgColor);
+        navPanel.add(backBtn);
+        add(navPanel, BorderLayout.SOUTH);
+    }
+
+    
+    private void styleBeginnerButton(JButton btn, Color fore, Color back) {
+        btn.setFont(new Font(fontName, Font.BOLD, 20)); 
+        btn.setForeground(fore);
+        btn.setBackground(back); 
+        btn.setBorder(BorderFactory.createLineBorder(fore, 3)); // Bold border matching text
     }
 }
 
@@ -1002,7 +1076,7 @@ public class HappyLearnForKids extends JFrame {
     private JPanel mainContainer = new JPanel(cardLayout);
 
     public HappyLearnForKids() {
-        setTitle("Kids Fun Learning System");
+        setTitle("Happy Learn For Kids");
         setSize(500, 520);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
