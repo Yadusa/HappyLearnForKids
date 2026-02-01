@@ -621,6 +621,33 @@ class ColorModule extends ModulePanel {
     }
 }
 
+class MediumMenuPanel extends ModulePanel {
+    public MediumMenuPanel(Runnable add, Runnable sub, Runnable mul, Runnable div, Runnable goBack) {
+        super("Medium Level: Math Operations");
+
+        JPanel grid = new JPanel(new GridLayout(2, 2, 15, 15));
+        grid.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+
+        JButton addBtn = new JButton("Addition");
+        JButton subBtn = new JButton("Subtraction");
+        JButton mulBtn = new JButton("Multiplication");
+        JButton divBtn = new JButton("Division");
+        JButton backBtn = new JButton("Back to Levels");
+
+        addBtn.addActionListener(e -> add.run());
+        subBtn.addActionListener(e -> sub.run());
+        mulBtn.addActionListener(e -> mul.run());
+        divBtn.addActionListener(e -> div.run());
+        backBtn.addActionListener(e -> goBack.run());
+
+        grid.add(addBtn); grid.add(subBtn);
+        grid.add(mulBtn); grid.add(divBtn);
+
+        add(grid, BorderLayout.CENTER);
+        add(backBtn, BorderLayout.SOUTH);
+    }
+}
+
 //MATH MODULE
 class MathModule extends ModulePanel {
     private JTextField numField1, numField2;
@@ -693,6 +720,262 @@ class MathModule extends ModulePanel {
     }
 }
 
+class AdditionModule extends ModulePanel {
+    private JTextField numField1, numField2;
+    private JLabel resultLabel;
+    private Runnable goBack;
+    private Runnable goNext;
+
+    public AdditionModule(Runnable goBack, Runnable goNext) {
+        super("Addition Fun!");
+        this.goBack = goBack;
+        this.goNext = goNext;
+
+        // 1. Input Panel (Where the user keys in numbers)
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
+
+        numField1 = new JTextField();
+        numField2 = new JTextField();
+        numField1.setFont(new Font("Arial", Font.PLAIN, 18));
+        numField2.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        resultLabel = new JLabel("Result: ", SwingConstants.CENTER);
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        
+        JButton calcBtn = new JButton("Calculate Addition");
+        calcBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        calcBtn.setBackground(Color.CYAN);
+
+        inputPanel.add(new JLabel("Enter First Number:"));
+        inputPanel.add(numField1);
+        inputPanel.add(new JLabel("Enter Second Number:"));
+        inputPanel.add(numField2);
+        inputPanel.add(new JLabel("Click to Solve:"));
+        inputPanel.add(calcBtn);
+
+        // Calculation Logic
+        calcBtn.addActionListener(e -> {
+            try {
+                // Gets the text keyed in by the customer
+                double n1 = Double.parseDouble(numField1.getText());
+                double n2 = Double.parseDouble(numField2.getText());
+                double sum = n1 + n2;
+                
+                // Displays the final answer
+                resultLabel.setText("Result: " + n1 + " + " + n2 + " = " + sum);
+                resultLabel.setForeground(new Color(0, 128, 0)); // Dark Green for success
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid numbers to calculate!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // 2. Navigation Panel (Matches your layout style)
+        JPanel nav = new JPanel(new GridLayout(1, 3, 20, 0));
+        nav.setBorder(BorderFactory.createEmptyBorder(10, 50, 20, 50));
+
+        JButton backBtn = new JButton("Back");
+        JButton nextBtn = new JButton("Next Level");
+        JButton exitBtn = new JButton("Exit");
+
+        Font btnFont = new Font("Arial", Font.BOLD, 16);
+        backBtn.setFont(btnFont);
+        nextBtn.setFont(btnFont);
+        exitBtn.setFont(btnFont);
+
+        backBtn.addActionListener(e -> goBack.run());
+        nextBtn.addActionListener(e -> goNext.run());
+        exitBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!");
+                System.exit(0);
+            }
+        });
+
+        nav.add(backBtn);
+        nav.add(nextBtn);
+        nav.add(exitBtn);
+
+        // 3. Adding to main layout
+        add(inputPanel, BorderLayout.NORTH);
+        add(resultLabel, BorderLayout.CENTER);
+        add(nav, BorderLayout.SOUTH);
+    }
+}
+
+class SubtractionModule extends ModulePanel {
+    private JTextField numField1, numField2;
+    private JLabel resultLabel;
+    private Runnable goBack;
+    private Runnable goNext;
+
+    public SubtractionModule(Runnable goBack, Runnable goNext) {
+        super("Subtraction Fun!");
+        this.goBack = goBack;
+        this.goNext = goNext;
+
+        // 1. Input Panel
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
+
+        numField1 = new JTextField();
+        numField2 = new JTextField();
+        numField1.setFont(new Font("Arial", Font.PLAIN, 18));
+        numField2.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        resultLabel = new JLabel("Result: ", SwingConstants.CENTER);
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        
+        JButton calcBtn = new JButton("Calculate Subtraction");
+        calcBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        calcBtn.setBackground(new Color(255, 182, 193)); // Light pink/red for subtraction
+
+        inputPanel.add(new JLabel("Number to subtract from:"));
+        inputPanel.add(numField1);
+        inputPanel.add(new JLabel("Amount to take away:"));
+        inputPanel.add(numField2);
+        inputPanel.add(new JLabel("Click to Solve:"));
+        inputPanel.add(calcBtn);
+
+        // Subtraction Logic
+        calcBtn.addActionListener(e -> {
+            try {
+                double n1 = Double.parseDouble(numField1.getText());
+                double n2 = Double.parseDouble(numField2.getText());
+                double difference = n1 - n2;
+                
+                resultLabel.setText("Result: " + n1 + " - " + n2 + " = " + difference);
+                resultLabel.setForeground(new Color(220, 20, 60)); // Crimson color
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid numbers!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // 2. Navigation Panel (Consistent with previous modules)
+        JPanel nav = new JPanel(new GridLayout(1, 3, 20, 0));
+        nav.setBorder(BorderFactory.createEmptyBorder(10, 50, 20, 50));
+
+        JButton backBtn = new JButton("Back");
+        JButton nextBtn = new JButton("Next Level");
+        JButton exitBtn = new JButton("Exit");
+
+        Font btnFont = new Font("Arial", Font.BOLD, 16);
+        backBtn.setFont(btnFont);
+        nextBtn.setFont(btnFont);
+        exitBtn.setFont(btnFont);
+
+        backBtn.addActionListener(e -> goBack.run());
+        nextBtn.addActionListener(e -> goNext.run());
+        exitBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!");
+                System.exit(0);
+            }
+        });
+
+        nav.add(backBtn);
+        nav.add(nextBtn);
+        nav.add(exitBtn);
+
+        // 3. Layout assembly
+        add(inputPanel, BorderLayout.NORTH);
+        add(resultLabel, BorderLayout.CENTER);
+        add(nav, BorderLayout.SOUTH);
+    }
+}
+
+class DivisionModule extends ModulePanel {
+    private JTextField numField1, numField2;
+    private JLabel resultLabel;
+    private Runnable goBack;
+    private Runnable goNext;
+
+    public DivisionModule(Runnable goBack, Runnable goNext) {
+        super("Division Fun!");
+        this.goBack = goBack;
+        this.goNext = goNext;
+
+        // 1. Input Panel (Where the user keys in numbers)
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
+
+        numField1 = new JTextField();
+        numField2 = new JTextField();
+        numField1.setFont(new Font("Arial", Font.PLAIN, 18));
+        numField2.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        resultLabel = new JLabel("Result: ", SwingConstants.CENTER);
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        
+        JButton calcBtn = new JButton("Calculate Division");
+        calcBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        calcBtn.setBackground(new Color(144, 238, 144)); // Light green
+
+        inputPanel.add(new JLabel("Number to be divided:"));
+        inputPanel.add(numField1);
+        inputPanel.add(new JLabel("Divide by (divisor):"));
+        inputPanel.add(numField2);
+        inputPanel.add(new JLabel("Click to Solve:"));
+        inputPanel.add(calcBtn);
+
+        // Division Logic with Safety Check
+        calcBtn.addActionListener(e -> {
+            try {
+                double n1 = Double.parseDouble(numField1.getText());
+                double n2 = Double.parseDouble(numField2.getText());
+                
+                // Special check for dividing by zero
+                if (n2 == 0) {
+                    resultLabel.setText("Result: Cannot divide by zero!");
+                    resultLabel.setForeground(Color.RED);
+                    JOptionPane.showMessageDialog(this, "Oops! You cannot divide a number by zero.", "Math Error", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    double quotient = n1 / n2;
+                    // String.format to limit long decimals (e.g., 10 / 3)
+                    resultLabel.setText("Result: " + n1 + " ÷ " + n2 + " = " + String.format("%.2f", quotient));
+                    resultLabel.setForeground(new Color(0, 0, 139)); // Dark Blue
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid numbers!", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // 2. Navigation Panel (Consistent with Colors, Numbers, etc.)
+        JPanel nav = new JPanel(new GridLayout(1, 3, 20, 0));
+        nav.setBorder(BorderFactory.createEmptyBorder(10, 50, 20, 50));
+
+        JButton backBtn = new JButton("Back");
+        JButton nextBtn = new JButton("Next Level");
+        JButton exitBtn = new JButton("Exit");
+
+        Font btnFont = new Font("Arial", Font.BOLD, 16);
+        backBtn.setFont(btnFont);
+        nextBtn.setFont(btnFont);
+        exitBtn.setFont(btnFont);
+
+        backBtn.addActionListener(e -> goBack.run());
+        nextBtn.addActionListener(e -> goNext.run());
+        exitBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this, "Thank you for using Happy Learn!");
+                System.exit(0);
+            }
+        });
+
+        nav.add(backBtn);
+        nav.add(nextBtn);
+        nav.add(exitBtn);
+
+        // 3. Assemble Layout
+        add(inputPanel, BorderLayout.NORTH);
+        add(resultLabel, BorderLayout.CENTER);
+        add(nav, BorderLayout.SOUTH);
+    }
+}
+
 // MAIN FRAME (HappyLearn)
 public class HappyLearnForKids extends JFrame {
     private CardLayout cardLayout = new CardLayout();
@@ -729,7 +1012,10 @@ public class HappyLearnForKids extends JFrame {
         Runnable showMenu = () -> cardLayout.show(mainContainer, "Menu");
         Runnable showAlpha = () -> cardLayout.show(mainContainer, "Alpha");
         Runnable showNumbers = () -> cardLayout.show(mainContainer, "Numbers");
-        Runnable showMath = () -> cardLayout.show(mainContainer, "Maths");
+        Runnable showMath = () -> cardLayout.show(mainContainer, "Multiplication");
+        Runnable showAdd = () -> cardLayout.show(mainContainer, "Addition");
+        Runnable showSub = () -> cardLayout.show(mainContainer, "Subtraction");
+        Runnable showDiv = () -> cardLayout.show(mainContainer, "Division");
 
         // Menu item actions
         welcomeItem.addActionListener(e -> showWelcome.run());
@@ -746,7 +1032,11 @@ public class HappyLearnForKids extends JFrame {
         mainContainer.add(new AlphabetModule(showBeginnerMenu, showNumbers), "Alpha");
         mainContainer.add(new NumbersModule(showBeginnerMenu, showColors), "Numbers");
         mainContainer.add(new ColorModule(showBeginnerMenu, showMath), "Colors");
-        mainContainer.add(new MathModule(showNumbers, showMenu), "Maths");
+        mainContainer.add(new MediumMenuPanel(showAdd, showSub, showMath, showDiv, showMenu), "MediumMenu");
+        mainContainer.add(new MathModule(showMediumMenu, showMediumMenu), "Multiplication");
+        mainContainer.add(new AdditionModule(showMediumMenu, showMediumMenu), "Addition");
+        mainContainer.add(new SubtractionModule(showMediumMenu, showMediumMenu), "Subtraction");
+        mainContainer.add(new DivisionModule(showMediumMenu, showMediumMenu), "Division");
 
         add(mainContainer);
 
