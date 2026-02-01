@@ -558,18 +558,15 @@ class ColorModule extends ModulePanel {
         nav.setBorder(BorderFactory.createEmptyBorder(10, 50, 20, 50));
 
         JButton backBtn = new JButton("Back");
-        JButton nextBtn = new JButton("Next");
         JButton exitBtn = new JButton("Exit");
 
         // Style fonts
         Font btnFont = new Font("Arial", Font.BOLD, 16);
         backBtn.setFont(btnFont);
-        nextBtn.setFont(btnFont);
         exitBtn.setFont(btnFont);
 
         // Button Actions
         backBtn.addActionListener(e -> goBack.run());
-        nextBtn.addActionListener(e -> goNext.run());
         exitBtn.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
@@ -580,7 +577,6 @@ class ColorModule extends ModulePanel {
 
         // Add buttons to nav panel
         nav.add(backBtn);
-        nav.add(nextBtn);
         nav.add(exitBtn);
 
         // 3. Add panels to the Main ModulePanel
@@ -748,7 +744,7 @@ public class HappyLearnForKids extends JFrame {
         mainContainer.add(new ModuleMenuPanel(showBeginnerMenu, showMediumMenu, showWelcome), "Menu"); // The missing link
         mainContainer.add(new BeginnerMenuPanel(showAlpha, showNumbers, showColors, showMenu), "BeginnerMenu");
         mainContainer.add(new AlphabetModule(showBeginnerMenu, showNumbers), "Alpha");
-        mainContainer.add(new NumbersModule(showAlpha, showColors), "Numbers");
+        mainContainer.add(new NumbersModule(showBeginnerMenu, showColors), "Numbers");
         mainContainer.add(new ColorModule(showBeginnerMenu, showMath), "Colors");
         mainContainer.add(new MathModule(showNumbers, showMenu), "Maths");
 
